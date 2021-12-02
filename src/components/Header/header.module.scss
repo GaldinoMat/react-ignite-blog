@@ -1,1 +1,14 @@
-// TODO
+.header {
+  width: 100%;
+  padding-top: 2.5rem;
+
+  .headerContent {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    .dot {
+      color: var(--highlight);
+    }
+  }
+}
