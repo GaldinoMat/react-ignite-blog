@@ -1,12 +1,14 @@
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
+import Link from 'next/link';
 
-import { BsCalendarDate, BsPerson } from 'react-icons/bs';
+import { FiUser, FiCalendar } from 'react-icons/fi';
+import { useState } from 'react';
+import Prismic from '@prismicio/client';
 import { getPrismicClient } from '../services/prismic';
 
-import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
-
+import { dateFormater } from '../utils/DateFormater';
 
 interface Post {
   uid?: string;
@@ -27,8 +29,34 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
-export default function Home() {
-  // TODO
+export default function Home({ postsPagination }: HomeProps) {
+  const formatedPosts = postsPagination.results.map(post => ({
+    ...post,
+    first_publication_date: dateFormater(post.first_publication_date),
+  }));
+
+  const [posts, setposts] = useState<Post[]>(formatedPosts);
+  const [nextPostPage, setnextPostPage] = useState<string>(
+    postsPagination.next_page
+  );
+
+  async function handleLoadMorePosts(): Promise<void> {
+    const newPostsPaginationProps = await fetch(nextPostPage).then(response =>
+      response.json()
+    );
+
+    setnextPostPage(newPostsPaginationProps.next_page);
+
+    const newPosts = newPostsPaginationProps.results.map(post => {
+      return {
+        ...post,
+        first_publication_date: dateFormater(post.first_publication_date),
+      };
+    });
+
+    setposts([...posts, ...newPosts]);
+  }
+
   return (
     <>
       <Head>
@@ -37,41 +65,73 @@ export default function Home() {
 
       <main className={styles.homeMainContainer}>
         <ul className={styles.postPreviewList}>
-          <li className={styles.postPreviewContainer}>
-            <div className={styles.postPreviewContent}>
-              <h2 className={styles.postPreviewTitle}>Como utilizar hooks</h2>
-              <p className={styles.postPreviewText}>
-                Pensando em sincronização em vez de ciclos de vida.
-              </p>
-              <div className={styles.postPreviewInfo}>
-                <div className={styles.postPreviewDate}>
-                  <BsCalendarDate />
-                  <time>15 mar 2021</time>
-                </div>
-                <div className={styles.postPreviewAuthorInfo}>
-                  <BsPerson />
-                  <p>Joseph Oliveira</p>
-                </div>
-              </div>
-            </div>
-          </li>
+          {posts.map(post => (
+            <li className={styles.postPreviewContainer} key={post.uid}>
+              <Link href={`/post/${post.uid}`}>
+                <a className={styles.postPreviewContent}>
+                  <h2 className={styles.postPreviewTitle}>{post.data.title}</h2>
+                  <p className={styles.postPreviewText}>{post.data.subtitle}</p>
+                  <div className={styles.postPreviewInfo}>
+                    <div className={styles.postPreviewDate}>
+                      <FiCalendar />
+                      <time>{post.first_publication_date}</time>
+                    </div>
+                    <div className={styles.postPreviewAuthorInfo}>
+                      <FiUser />
+                      <p>{post.data.author}</p>
+                    </div>
+                  </div>
+                </a>
+              </Link>
+            </li>
+          ))}
         </ul>
 
-        <div className={styles.loadPostsContainer}>
-          <div className={styles.loadPostsButtonContainer}>
-            <button className={styles.loadPostsButton} type="button">
-              Carregar mais posts
-            </button>
+        {nextPostPage && (
+          <div className={styles.loadPostsContainer}>
+            <div className={styles.loadPostsButtonContainer}>
+              <button
+                className={styles.loadPostsButton}
+                type="button"
+                onClick={handleLoadMorePosts}
+              >
+                Carregar mais posts
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </main>
     </>
   );
 }
 
-// export const getStaticProps = async () => {
-//   // const prismic = getPrismicClient();
-//   // const postsResponse = await prismic.query(TODO);
+export const getStaticProps: GetStaticProps = async () => {
+  const prismic = getPrismicClient();
+  const postsResponse = await prismic.query(
+    [Prismic.predicates.at('document.type', 'posts')],
+    {
+      pageSize: 1,
+    }
+  );
 
-//   // TODO
-// };
+  const posts = postsResponse.results.map(post => ({
+    uid: post.uid,
+    first_publication_date: post.first_publication_date,
+    data: {
+      title: post.data.title,
+      subtitle: post.data.subtitle,
+      author: post.data.author,
+    },
+  }));
+
+  const postsPagination = {
+    next_page: postsResponse.next_page,
+    results: posts,
+  };
+
+  return {
+    props: {
+      postsPagination,
+    },
+  };
+};
