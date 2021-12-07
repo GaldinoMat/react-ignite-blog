@@ -6,8 +6,10 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.headerContent}>
-        <Link href="/">
-          <Image src="/images/logo.svg" alt="logo" width="55" height="30" />
+        <Link href="/" passHref>
+          <a>
+            <Image src="/images/logo.svg" alt="logo" width="55" height="30" />
+          </a>
         </Link>
         <h1 className={styles.title}>spacetraveling</h1>
         <h1 className={styles.dot}>.</h1>

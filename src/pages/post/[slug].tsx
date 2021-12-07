@@ -6,9 +6,11 @@ import Head from 'next/head';
 
 import { useRouter } from 'next/router';
 import { RichText } from 'prismic-dom';
+import { FiUser, FiCalendar, FiClock } from 'react-icons/fi';
 import styles from './post.module.scss';
 import { getPrismicClient } from '../../services/prismic';
 import { dateFormater } from '../../utils/DateFormater';
+
 
 interface Post {
   first_publication_date: string | null;
@@ -72,30 +74,33 @@ export default function Post({ post }: PostProps) {
           </div>
           <div className={styles.postContentInfoContainer}>
             <div className={styles.postContentInfo}>
+              <FiClock />
               <time>{dateFormater(post.first_publication_date)}</time>
             </div>
             <div className={styles.postContentInfo}>
+              <FiUser />
               <p>{post.data.author}</p>
             </div>
             <div className={styles.postContentInfo}>
+              <FiClock />
               <p> {readingTime} min</p>
             </div>
           </div>
+          {post.data.content.map(content => (
+            <section key={content.heading} className={styles.postContent}>
+              <div className={styles.postContentHeadingContainer}>
+                <h2 className={styles.postContentHeading}>{content.heading}</h2>
+              </div>
+              <div
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{
+                  __html: RichText.asHtml(content.body),
+                }}
+                className={styles.postContentBody}
+              />
+            </section>
+          ))}
         </section>
-        {post.data.content.map(content => (
-          <section key={content.heading} className={styles.postContent}>
-            <div className={styles.postContentHeadingContainer}>
-              <h2 className={styles.postContentHeading}>{content.heading}</h2>
-            </div>
-            <div
-              // eslint-disable-next-line react/no-danger
-              dangerouslySetInnerHTML={{
-                __html: RichText.asHtml(content.body),
-              }}
-              className={styles.postContentBody}
-            />
-          </section>
-        ))}
       </article>
     </>
   );

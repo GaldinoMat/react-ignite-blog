@@ -1,0 +1,88 @@
+.post {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .postBannerContainer {
+    width: 100%;
+    height: 13.75rem;
+
+    @media screen and (min-width: 1024px) {
+      height: 25rem;
+    }
+
+    .postBannerImage {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .postContentContainer {
+    width: 100%;
+    padding: 2.5rem 3rem;
+
+    @media screen and (min-width: 1024px) {
+      padding: 5rem 13rem;
+    }
+
+    .postContentTitleContainer {
+      margin-bottom: 0.75rem;
+
+      .postContentTitle {
+        font-size: 1.5rem;
+
+        @media screen and (min-width: 1024px) {
+          font-size: 3rem;
+        }
+      }
+    }
+
+    .postContentInfoContainer {
+      display: flex;
+      align-items: center;
+
+      .postContentInfo {
+        display: flex;
+        align-items: center;
+
+        p,
+        time {
+          margin-left: 0.5rem;
+          font-size: 0.875rem;
+        }
+
+        & + div {
+          margin-left: 0.75rem;
+        }
+      }
+    }
+
+    .postContent {
+      margin-top: 2rem;
+
+      .postContentHeadingContainer {
+        margin-bottom: 1rem;
+
+        @media screen and (min-width: 1024px) {
+          margin-bottom: 2.5rem;
+        }
+
+        h2 {
+          font-size: 1.125rem;
+
+          @media screen and (min-width: 1024px) {
+            font-size: 2.25rem;
+          }
+        }
+      }
+
+      .postContentBody {
+        font-size: 1rem;
+        @media screen and (min-width: 1024px) {
+          font-size: 1.125rem;
+        }
+      }
+    }
+  }
+}
