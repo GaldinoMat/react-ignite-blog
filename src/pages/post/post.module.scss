@@ -19,11 +19,12 @@
   }
 
   .postContentContainer {
-    width: 100%;
-    padding: 2.5rem 3rem;
+    max-width: 25rem;
+    padding: 2.5rem 0;
 
     @media screen and (min-width: 1024px) {
-      padding: 5rem 13rem;
+      max-width: 70rem;
+      padding: 5rem 0;
     }
 
     .postContentTitleContainer {
