@@ -6,11 +6,10 @@ import Head from 'next/head';
 
 import { useRouter } from 'next/router';
 import { RichText } from 'prismic-dom';
-import { FiUser, FiCalendar, FiClock } from 'react-icons/fi';
+import { FiUser, FiClock } from 'react-icons/fi';
 import styles from './post.module.scss';
 import { getPrismicClient } from '../../services/prismic';
 import { dateFormater } from '../../utils/DateFormater';
-
 
 interface Post {
   first_publication_date: string | null;
